@@ -63,6 +63,7 @@
     "eslint-config-react-app": "^6.0.0",
     "eslint-config-typescript": "^3.0.0",
     "eslint-plugin-import": "^2.24.2",
-    "eslint-plugin-prettier": "^4.0.0"
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react-hooks": "^4.2.0"
   }
 }
