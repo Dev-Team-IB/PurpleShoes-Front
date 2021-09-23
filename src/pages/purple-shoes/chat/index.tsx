@@ -1,6 +1,8 @@
 import { ChangeEvent, useEffect, useState } from "react";
+import queryString from "query-string";
 
-const Chat = () => {
+const Chat = (props: any) => {
+  const roomId = queryString.parse(props.location.search).roomId;
   const [state, setState] = useState("");
   const KeyEventHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter") {
@@ -18,6 +20,7 @@ const Chat = () => {
 
   useEffect(() => {
     console.log("hello world!");
+    console.log("entered room : ", roomId);
   }, []);
 
   return (
