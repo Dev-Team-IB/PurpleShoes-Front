@@ -1,4 +1,4 @@
-import { normalize } from 'styled-normalize';
+import { normalize } from "styled-normalize";
 import { createGlobalStyle } from "styled-components";
 
 /**

@@ -1,17 +1,13 @@
 import About from "./About";
 import Home from "./Home";
+import Header from "./Header";
 
-const IntroView = () => {
+const Intro = () => {
+  return (
+    <>
+      <Header />
+    </>
+  );
+};
 
-    return(
-        <>
-        aasdf
-            <About/>
-            <Home/>
-        </>
-
-    )
-
-}
-
-export default IntroView;
+export default Intro;
