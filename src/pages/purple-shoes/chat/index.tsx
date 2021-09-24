@@ -3,14 +3,17 @@ import queryString from "query-string";
 import io from "socket.io-client";
 
 const Chat = (props: any) => {
-  const roomId = queryString.parse(props.location.search).roomId;
-  if (roomId == undefined) {
+  const userId = queryString.parse(props.location.search).user;
+  if (userId == undefined) {
     return <>wrong room id</>;
   }
   const [state, setState] = useState("");
 
   const socket = io("http://localhost:5000", {
     path: "/socketchat",
+    query: {
+      user: `${userId}`,
+    },
   });
   socket.on("connect", () => {
     console.log("connection server");
@@ -31,12 +34,12 @@ const Chat = (props: any) => {
   };
 
   useEffect(() => {
-    console.log("entered room : ", roomId);
+    console.log("entered room : ", userId);
   }, []);
 
   return (
     <>
-      <div>connected room {roomId}</div>
+      <div>connected room {userId}</div>
       <input
         type="text"
         value={state}
