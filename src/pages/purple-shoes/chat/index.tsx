@@ -1,6 +1,10 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import queryString from "query-string";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
+import { ChatEvent } from "./ChatEvent";
+import { DefaultEventsMap } from "socket.io-client/build/typed-events";
+
+let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 const Chat = (props: any) => {
   const userId = queryString.parse(props.location.search).user;
@@ -9,16 +13,11 @@ const Chat = (props: any) => {
   }
   const [state, setState] = useState("");
 
-  const socket = io("http://localhost:5000", {
-    path: "/socketchat",
-    query: {
-      user: `${userId}`,
-    },
-  });
-  socket.on("connect", () => {
-    console.log("connection server");
-  });
+  //https://socket.io/docs/v4/client-api/#event-connect
 
+  const changeee = () => {
+    console.log("change");
+  };
   const KeyEventHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter") {
       console.log("Type :", state);
@@ -30,11 +29,25 @@ const Chat = (props: any) => {
   };
   const textSubmit = () => {
     console.log("textSubmit :", state);
+    socket.emit(ChatEvent.NEW_MESSAGE, state);
     setState("");
   };
 
   useEffect(() => {
     console.log("entered room : ", userId);
+
+    socket = io("http://localhost:5000", {
+      path: "/socketchat",
+      query: {
+        user: `${userId}`,
+      },
+    });
+    socket.on("connect", () => {
+      console.log("connection server");
+    });
+    socket.on(ChatEvent.NEW_MESSAGE, (message: string) => {
+      alert(message);
+    });
   }, []);
 
   return (
