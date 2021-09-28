@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import queryString from "query-string";
-import io, { Socket } from "socket.io-client";
+import io, { Socket, Manager } from "socket.io-client";
 import { ChatEvent } from "./ChatEvent";
 import { DefaultEventsMap } from "socket.io-client/build/typed-events";
 
@@ -32,8 +32,9 @@ const Chat = (props: any) => {
     setState(e.target.value);
   };
   const sendMessage = () => {
+    if (state === "") return;
     socket.emit(ChatEvent.NEW_MESSAGE, state);
-    //setState("");
+    setState("");
   };
 
   useEffect(() => {
@@ -41,15 +42,17 @@ const Chat = (props: any) => {
 
     socket = io("http://localhost:5000", {
       path: "/socketchat",
+      reconnectionDelayMax: 10000,
       query: {
         user: `${userId}`,
       },
     });
     socket.on("connect", () => {
       console.log("connection server");
+      socket.emit(ChatEvent.GET_CHAT_HISTORY);
     });
     socket.on(ChatEvent.NEW_MESSAGE, (message: string) => {
-      setChatHistory(chatHistory.push(message));
+      setChatHistory((chatHistory) => chatHistory.concat(message));
       console.log(chatHistory);
     });
   }, []);
@@ -64,8 +67,8 @@ const Chat = (props: any) => {
         onKeyDown={KeyEventHandler}
       />
       <input type="button" value="전송" onClick={sendMessage} /> <br />
-      {chatHistory?.map((e) => {
-        return <div key={e.toString()}>{e}</div>;
+      {chatHistory?.map((e, i) => {
+        return <div key={i}>{e}</div>;
       })}
     </>
   );
