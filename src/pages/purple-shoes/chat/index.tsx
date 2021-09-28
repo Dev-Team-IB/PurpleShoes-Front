@@ -18,7 +18,6 @@ const Chat = (props: any) => {
   }
 
   const [state, setState] = useState("");
-
   const [chatHistory, setChatHistory] = useState<string[]>([]);
 
   //https://socket.io/docs/v4/client-api/#event-connect
@@ -49,11 +48,14 @@ const Chat = (props: any) => {
     });
     socket.on("connect", () => {
       console.log("connection server");
-      socket.emit(ChatEvent.GET_CHAT_HISTORY);
+      socket.emit(ChatEvent.CHAT_HISTROY);
     });
     socket.on(ChatEvent.NEW_MESSAGE, (message: string) => {
       setChatHistory((chatHistory) => chatHistory.concat(message));
       console.log(chatHistory);
+    });
+    socket.on(ChatEvent.CHAT_HISTROY, () => {
+      //send client to history
     });
   }, []);
 
