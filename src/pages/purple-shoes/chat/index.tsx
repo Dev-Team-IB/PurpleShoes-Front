@@ -3,6 +3,7 @@ import queryString from "query-string";
 import io, { Socket, Manager } from "socket.io-client";
 import { ChatEvent } from "./ChatEvent";
 import { DefaultEventsMap } from "socket.io-client/build/typed-events";
+import { messageType, roomType } from "./types/Chat";
 
 type ChatType = {
   list: [{ user: string; time: string; content: string }];
@@ -18,7 +19,7 @@ const Chat = (props: any) => {
   }
 
   const [state, setState] = useState("");
-  const [chatHistory, setChatHistory] = useState<string[]>([]);
+  const [chatHistory, setChatHistory] = useState<messageType[]>([]);
 
   //https://socket.io/docs/v4/client-api/#event-connect
 
@@ -50,12 +51,15 @@ const Chat = (props: any) => {
       console.log("connection server");
       socket.emit(ChatEvent.CHAT_HISTROY);
     });
-    socket.on(ChatEvent.NEW_MESSAGE, (message: string) => {
+    socket.on(ChatEvent.CHAT_HISTROY, (room: roomType) => {
+      //send client to history
+
+      console.log(room.messages);
+      setChatHistory(room.messages);
+    });
+    socket.on(ChatEvent.NEW_MESSAGE, (message: messageType) => {
       setChatHistory((chatHistory) => chatHistory.concat(message));
       console.log(chatHistory);
-    });
-    socket.on(ChatEvent.CHAT_HISTROY, () => {
-      //send client to history
     });
   }, []);
 
@@ -70,7 +74,7 @@ const Chat = (props: any) => {
       />
       <input type="button" value="전송" onClick={sendMessage} /> <br />
       {chatHistory?.map((e, i) => {
-        return <div key={i}>{e}</div>;
+        return <div key={i}>{e.context}</div>;
       })}
     </>
   );
