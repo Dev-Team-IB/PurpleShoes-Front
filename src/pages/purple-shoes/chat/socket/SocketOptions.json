@@ -1,0 +1,5 @@
+{
+  "url": "http://localhost:5000",
+  "path": "/socketchat",
+  "reconnectionDelayMax": 10000
+}

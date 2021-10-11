@@ -14,7 +14,7 @@ function App() {
       <Switch>
         <Route path="/" exact component={Intro} />;
         <Route path="/intro" exact component={Intro} />;
-        <Route path="/chat" exact component={Chat} />;
+        <Route path="/chat/:manager/:user" exact component={Chat} />;
       </Switch>
     </BrowserRouter>
   );

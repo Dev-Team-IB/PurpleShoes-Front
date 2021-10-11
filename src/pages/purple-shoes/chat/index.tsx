@@ -1,81 +1,17 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import queryString from "query-string";
-import io, { Socket, Manager } from "socket.io-client";
-import { ChatEvent } from "./ChatEvent";
-import { DefaultEventsMap } from "socket.io-client/build/typed-events";
-import { messageType, roomType } from "./types/Chat";
-
-type ChatType = {
-  list: [{ user: string; time: string; content: string }];
-};
-
-let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
-
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import ChatInputView from "./ChatInput";
+import { ChatProvider } from "./ChatContext";
 const Chat = (props: any) => {
-  const userId = queryString.parse(props.location.search).user;
-
-  if (userId == undefined) {
-    return <>wrong room id</>;
-  }
-
-  const [state, setState] = useState("");
-  const [chatHistory, setChatHistory] = useState<messageType[]>([]);
-
-  //https://socket.io/docs/v4/client-api/#event-connect
-
-  const KeyEventHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key == "Enter") {
-      sendMessage();
-    }
-  };
-  const stateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState(e.target.value);
-  };
-  const sendMessage = () => {
-    if (state === "") return;
-    socket.emit(ChatEvent.NEW_MESSAGE, state);
-    setState("");
-  };
-
-  useEffect(() => {
-    console.log("entered room : ", userId);
-
-    socket = io("http://localhost:5000", {
-      path: "/socketchat",
-      reconnectionDelayMax: 10000,
-      query: {
-        user: `${userId}`,
-      },
-    });
-    socket.on("connect", () => {
-      console.log("connection server");
-      socket.emit(ChatEvent.CHAT_HISTROY);
-    });
-    socket.on(ChatEvent.CHAT_HISTROY, (room: roomType) => {
-      //send client to history
-
-      console.log(room.messages);
-      setChatHistory(room.messages);
-    });
-    socket.on(ChatEvent.NEW_MESSAGE, (message: messageType) => {
-      setChatHistory((chatHistory) => chatHistory.concat(message));
-      console.log(chatHistory);
-    });
-  }, []);
-
+  const manangerName = props.match.params.manager;
+  const userName = props.match.params.user;
   return (
     <>
-      <div>connected room {userId}</div>
-      <input
-        type="text"
-        value={state}
-        onChange={stateChange}
-        onKeyDown={KeyEventHandler}
-      />
-      <input type="button" value="전송" onClick={sendMessage} /> <br />
-      {chatHistory?.map((e, i) => {
-        return <div key={i}>{e.context}</div>;
-      })}
+      <ChatProvider>
+        <div>Header</div>
+        <ChatListView />
+        <ChatInputView />
+      </ChatProvider>
     </>
   );
 };
