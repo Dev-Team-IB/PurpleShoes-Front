@@ -9,7 +9,7 @@ const ChatSocket = (manager: string, user: string) => {
   const [messages, setMessages] = useState<messageType[]>([]);
 
   socket = io("http://localhost:5000", {
-    path: "/chat",
+    path: "/socketchat",
     reconnectionDelayMax: 10000,
     query: {
       user: user,

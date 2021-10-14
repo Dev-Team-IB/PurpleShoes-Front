@@ -1,17 +1,21 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
+import ChatSocket from "./socket/Socket";
 import { ChatContextType } from "./types/Chat";
 
-interface Props {
+type Props = {
   children: JSX.Element | JSX.Element[];
-}
-
+  manager: string;
+  user: string;
+};
+let chatSocket: any;
 //ChatContext는 socket에 대한 값을 가지고 있습니다.
-const ChatContext = createContext<ChatContextType | undefined>(undefined);
-
-const ChatProvider = ({ children }: Props): JSX.Element => {
-  useEffect(() => {}, []);
+const ChatContext = createContext(chatSocket);
+const ChatProvider = ({ children, manager, user }: Props): JSX.Element => {
+  useEffect(() => {
+    chatSocket = ChatSocket(manager, user);
+  }, []);
   return (
-    <ChatContext.Provider value={undefined}>{children}</ChatContext.Provider>
+    <ChatContext.Provider value={chatSocket}>{children}</ChatContext.Provider>
   );
 };
 
